@@ -16,6 +16,7 @@ from fastapi import WebSocket,WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from CaesarJWT.caesarjwt import CaesarJWT
 from CaesarSQLDB.caesar_create_tables import CaesarCreateTables
+import requests
 load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(
@@ -34,6 +35,10 @@ caesarcreatetables.create(caesarcrud)
 JSONObject = Dict[Any, Any]
 JSONArray = List[Any]
 JSONStructure = Union[JSONArray, JSONObject]
+
+def stream_subtitle(url):
+    for chunk in requests.get(url,stream=True):
+        yield chunk
 
 
 @app.get('/')# GET # allow all origins all methods.
@@ -54,7 +59,13 @@ async def addwishlist(data: JSONStructure = None):
             return {"message":"added to wishlist."}
     except Exception as ex:
         return {"error":f"{type(ex)},{ex}"}
-
+@app.get('/getsubtitles')# GET # allow all origins all methods.
+async def getsubtitles(url:str):
+    try:
+       return StreamingResponse(stream_subtitle(url),status_code=status.HTTP_200_OK,
+                                media_type="text/vtt") #Response(buffer.getvalue(), headers=headers, media_type='video/mp4')
+    except Exception as ex:
+        return {"error":f"{type(ex)},{ex}"}
 
 @app.get('/checkwishlist')# GET # allow all origins all methods.
 async def checkwishlist(themoviedbid:str):
@@ -94,6 +105,6 @@ async def deletefromwishlist(themoviedbid:str):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app",port=8080,log_level="info")
+    uvicorn.run("main:app",port=8090,log_level="info")
     #uvicorn.run()
     #asyncio.run(main())
