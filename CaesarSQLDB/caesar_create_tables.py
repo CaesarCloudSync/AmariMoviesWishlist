@@ -1,11 +1,11 @@
+from CaesarSQLDB.caesarcrud import CaesarCRUD
 class CaesarCreateTables:
     def __init__(self) -> None:
-        self.wishlistfields = ("movie","themoviedbid","broadcasttype")
+        self.usersfields = ("email","password")
 
         
 
-    def create(self,caesarcrud):
-        caesarcrud.create_table("movieid",self.wishlistfields,
-        ("varchar(255) NOT NULL","INT NOT NULL","varchar(255) NOT NULL"),
-        "amarimovieswishlist")
-
+    def create(self,caesarcrud :CaesarCRUD):
+        caesarcrud.create_table("userid",self.usersfields,
+        ("varchar(255) NOT NULL","varchar(255) NOT NULL"),
+        "users")
